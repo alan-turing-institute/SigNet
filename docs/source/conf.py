@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath('../../signet'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'signet'
+project = 'SigNet'
 copyright = '2018, Peter Davies and Aldo Glielmo'
 author = 'Peter Davies and Aldo Glielmo'
 

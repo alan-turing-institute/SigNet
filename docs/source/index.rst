@@ -3,27 +3,24 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to SigNet
+Welcome to the SigNet package!
 ==================================
 
-Introduction to the project
-
-
-Requirements:
-
-Need of cvxpy
-
-Contents:
+SigNet is a Python package for clustering of Signed Networks.
 
 .. toctree::
-   :maxdepth: 3
-   :caption: Contents:
+   :maxdepth: 2
+   :caption: Table of Contents:
    
-   code
+   installation
+   implemented_algorithms
+   usage
+   cluster
+   block_models
 
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`
