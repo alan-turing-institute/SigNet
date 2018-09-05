@@ -18,11 +18,18 @@ from signet.cluster import Cluster
 from signet.block_models import SSMB
 from sklearn.metrics import adjusted_rand_score
 
-(Ap, An), true_assignment = SSBM(n, k, pin, etain)
+
+# simple test on the signed stochastic block model 
+
+n = 50000 # number of nodes
+eta = 0.1 # sign flipping probability
+p = 0.0002 # sparsity
+
+(Ap, An), true_assignment = SSBM(n, k, pin, etain) # construct a graph
 
 c = Cluster((Ap, An))
 
-predictions = c.spectral_cluster_laplacian(k = k, normalisation='sym')
+predictions = c.spectral_cluster_laplacian(k = k, normalisation='sym') # cluster with the signed laplacian
 score = adjusted_rand_score(predictions, true_assignment)
 
 print(score)
