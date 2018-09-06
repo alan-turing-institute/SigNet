@@ -1,6 +1,6 @@
 from setuptools import setup
 
-setup(name='signet',
+setup(name='SigNet',
       version='0.1.0',
       description='A package for clustering signed networks',
       long_description=open('README.md').read(),
