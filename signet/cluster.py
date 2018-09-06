@@ -4,8 +4,8 @@ import sklearn.cluster as sl
 import sklearn.metrics as sm
 import numpy as np
 import math
-from utils import sqrtinvdiag, invdiag, cut, merge, objscore
-from burer_monteiro_sparse import augmented_lagrangian
+from .utils import sqrtinvdiag, invdiag, cut, merge, objscore
+from .burer_monteiro_sparse import augmented_lagrangian
 
 
 np.set_printoptions(2)

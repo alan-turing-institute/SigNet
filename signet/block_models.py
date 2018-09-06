@@ -1,7 +1,5 @@
 import numpy as np
 import scipy.sparse as ss
-# import random as rnd
-#  better tu use a single random generator, numpy for convenience
 import numpy.random as rnd
 import math
 import networkx as nx
