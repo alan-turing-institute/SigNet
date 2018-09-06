@@ -15,9 +15,10 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('../..'))
 sys.path.insert(0, os.path.abspath('../signet'))
 sys.path.insert(0, os.path.abspath('../../signet'))
-
+#autodoc_mock_imports = ['utils', 'block_models', 'cluster']
 # -- Project information -----------------------------------------------------
 
 project = 'SigNet'
@@ -159,18 +160,48 @@ texinfo_documents = [
 
 # -- Extension configuration -------------------------------------------------
 
-def run_apidoc(_):
-    from sphinx.apidoc import main
-    import os
-    import sys
-    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-    cur_dir = os.path.abspath(os.path.dirname(__file__))
-    module = '.'
-    output_path = os.path.join(cur_dir, 'source')
-    # main(['-e', '-o', output_path, module, '--force'])
 
-def setup(app):
-    app.connect('builder-inited', run_apidoc)
+# def run_apidoc(_):
+#     from sphinx.apidoc import main
+#     import os
+#     import sys
+#     sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+#     sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+#     print(os.path.join(os.path.dirname(__file__), '..', '..'))
+#     cur_dir = os.path.abspath(os.path.dirname(__file__))
+#     module = os.path.join(cur_dir,"..","..","signet")
+#     print(cur_dir)
+#     print(module)
+#     #main(['-e', '-o', cur_dir, module, '--force'])
+#     main(cur_dir , module)
+#
+# def setup(app):
+#     app.connect('builder-inited', run_apidoc)
+#
+#
 
-
+#
+# import os
+# import sys
+#
+# def add_to_path():
+#
+#     partial_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../')
+#     workspace_path = os.path.abspath(partial_path)
+#     assert os.path.exists(workspace_path)
+#
+#     projects = []
+#
+#     for current, dirs, c in os.walk(str(workspace_path)):
+#         for dir in dirs:
+#
+#             project_path = os.path.join(workspace_path, dir, 'src')
+#
+#             if os.path.exists(project_path):
+#                 projects.append(project_path)
+#
+#     for project_str in projects:
+#         sys.path.append(project_str)
+#
+# add_to_path()
 

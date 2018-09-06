@@ -11,13 +11,13 @@ SigNet is a Python package for clustering of Signed Networks.
 .. toctree::
    :maxdepth: 2
    :caption: Table of Contents:
-   
+
    installation
    implemented_algorithms
    usage
    cluster
    block_models
-
+   utils
 
 Indices and tables
 ------------------
