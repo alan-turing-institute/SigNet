@@ -1,5 +1,5 @@
 # SigNet
-A package for clustering of Signed Networks, the following algorithms were implemented
+A package for clustering of Signed Networks, the following algorithms were implemented:
 
 - Standard spectral clustering with
   - Adjacency matrix (with multiple normalisations)
@@ -7,9 +7,11 @@ A package for clustering of Signed Networks, the following algorithms were imple
   - Balance Ratio Cut
   - Balance Normalised Cut
   
-- Semidefinite clustering (with exact and approximate solvers)
+- Semidefinite programming clustering (with exact and approximate solvers)
 
 - Generalised eigenproblem clustering (with multiple normalisations)
+
+- Clustering using a signed variant of the Bethe Hessian matrix
 
 ## Typical usage
 
@@ -41,7 +43,7 @@ print(score)
 The easiest way to install the dependencies is by using conda or pip
 
 ```
-coda install numpy scipy sklearn cvxpy
+conda install numpy scipy sklearn cvxpy
 ```
 
 
