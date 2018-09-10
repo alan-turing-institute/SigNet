@@ -40,25 +40,21 @@ print(score)
 
 ## Installation
 
-The easiest way to install the dependencies is by using conda or pip
+Install the latest version from this Github repository.
 
 ```
-conda install numpy scipy sklearn cvxpy
+pip install git+https://github.com/alan-turing-institute/signet.git
 ```
-
-
-While at the moment the package can only be installed from source by downloading the folder and running
-
-```
-python setup.py install
-```
-
-in the main directory.
 
 
 ## API Reference
 
-The documentation of this package was automatically generated using Sphinx 
+The documentation of this package was automatically generated using Sphinx. To generate
+the documentation locally:
+1. Install sphinx and the readthedocs theme
+  - `pip install sphinx -U`
+  - `pip install sphinx_rtd_theme -U`
+2. Switch to the `docs` folder and build the docs with `make html`
 
 ## Tests
 
