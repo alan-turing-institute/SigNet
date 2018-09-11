@@ -25,10 +25,7 @@ def SSBM(n, k, pin, etain, pout=None, etaout=None, values='ones', sizes='uniform
             'uneven': Communities are given affinities uniformly at random, and nodes are randomly assigned to communities weighted by their affinity.
 
     Returns:
-        (a,b),c, where:
-        a is a sparse n by n matrix of positive edges
-        b is a sparse n by n matrix of negative edges
-        c is an array of cluster membership
+        (a,b),c where a is a sparse n by n matrix of positive edges, b is a sparse n by n matrix of negative edges c is an array of cluster membership.
 
     """
 
@@ -153,6 +150,20 @@ def SSBM(n, k, pin, etain, pout=None, etaout=None, values='ones', sizes='uniform
 
 
 def SBAM(n, k, p, eta):
+    """A signed Barabási–Albert model graph generator.
+
+    Args:
+        n: (int) Number of nodes.
+        k: (int) Number of communities.
+        p: (float) Sparsity value.
+        eta: (float) Noise value.
+
+    Returns:
+        (a,b),c where a is a sparse n by n matrix of positive edges, b is a sparse n by n matrix of negative edges c is an array of cluster membership.
+
+    """
+    
+    
     # correspondence between m and p (by equating mean degree)
     m = int(n * p / 2)
     # generate a positive BA graph
@@ -191,7 +202,19 @@ def SBAM(n, k, p, eta):
     return (A_p, A_n), truth
 
 
-def SRBM(n, k, p, eta): #BUG?
+def SRBM(n, k, p, eta): 
+    """A signed regular graph model generator.
+
+    Args:
+        n: (int) Number of nodes.
+        k: (int) Number of communities.
+        p: (float) Sparsity value.
+        eta: (float) Noise value.
+
+    Returns:
+        (a,b),c where a is a sparse n by n matrix of positive edges, b is a sparse n by n matrix of negative edges c is an array of cluster membership.
+
+    """
 
     c = int(n * p)
     net = nx.random_regular_graph(n=n, d=c)

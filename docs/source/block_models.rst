@@ -1,7 +1,7 @@
-The signed block models
+The block_models module
 =================================================
 
-The package contains a series of function that can generate random graphs with a signed community structure. 
+This module contains a series of function that can generate random graphs with a signed community structure. 
 
 .. automodule:: block_models
     :members:
