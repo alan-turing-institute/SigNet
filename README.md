@@ -25,6 +25,7 @@ from sklearn.metrics import adjusted_rand_score
 
 n = 50000 # number of nodes
 eta = 0.1 # sign flipping probability
+k = 2
 p = 0.0002 # sparsity
 
 (Ap, An), true_assignment = SSBM(n, k, pin, etain) # construct a graph
