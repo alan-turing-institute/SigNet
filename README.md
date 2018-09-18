@@ -59,7 +59,7 @@ the documentation locally:
 
 ## Tests
 
-TODO: add some jupyter tests
+To check that the code is working for you, try to download and run the jupyter notebook inside the "tests" folder.
 
 ## Current Authors
 
