@@ -7,27 +7,14 @@ Installing the requirements
 ---------------------------
 
 
-This package is based on numpy and scipy, these can be easily installed using anaconda or pip
-
-.. code-block:: bash
-
-   conda install numpy scipy
-
-
-.. code-block:: bash
-
-   pip install numpy scipy
-
-For semidefinite clustering using the interior point method the cvx package is also needed
-
+This package is based on numpy, scipy, networkx, sklearn and cvxpy. These can be easily installed using anaconda or pip. Alternatively, they will be automatically installed with the package.
 
 
 Installing the package
 ----------------------
 
-SigNet can only be installed from source at the moment. 
+Install the latest version from this Github repository.
 
 .. code-block:: bash
+	pip install git+https://github.com/alan-turing-institute/signet.git
 
-   cd signed
-   python setup.py install
