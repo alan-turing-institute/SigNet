@@ -42,9 +42,8 @@ print(score)
 ## Installation
 
 Install the latest version from this Github repository.
-
 ```
-pip install git+https://github.com/alan-turing-institute/signet.git
+pip install git+https://github.com/alan-turing-institute/SigNet.git
 ```
 
 
