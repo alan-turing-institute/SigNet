@@ -117,3 +117,9 @@ venv.bak/
 # .idea 
 .idea/
 *.iml
+
+# Icon
+Icon*
+/signet/Icon*
+/signet/tests/Icon*
+
