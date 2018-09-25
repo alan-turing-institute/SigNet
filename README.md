@@ -56,6 +56,9 @@ the documentation locally:
   - `pip install sphinx_rtd_theme -U`
 2. Switch to the `docs` folder and build the docs with `make html`
 
+Alternatively, the documentation can be found at https://signet.readthedocs.io/en/latest/index.html.
+
+
 ## Tests
 
 To check that the code is working for you, try to download and run the jupyter notebook inside the "tests" folder.
