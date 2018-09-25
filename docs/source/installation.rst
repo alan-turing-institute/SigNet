@@ -15,11 +15,8 @@ This package is based on numpy, scipy, networkx, sklearn and cvxpy. These can be
 Installing the package
 ----------------------
 
-Install the latest version from this Github repository.
+Install the latest version from this Github repository via
 
 .. code-block:: bash
 
-	pip install git+https://github.com/alan-turing-institute/signet.git
-
-
-
+	pip install git+https://github.com/alan-turing-institute/SigNet.git
