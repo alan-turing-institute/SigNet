@@ -535,7 +535,7 @@ class Cluster:
 
 
 	def SPONGE_sym(self, k=4, tau_p=1, tau_n=1, eigens=None, mi=None):
-		"""Clusters the graph using the symmetric normalised version of the SPONGE clustering clustering.
+		"""Clusters the graph using the symmetric normalised version of the SPONGE clustering algorithm.
 
 		The algorithm tries to minimises the following ratio (Lbar_sym^+ + tau_n Id)/(Lbar_sym^- + tau_p Id).
 		The parameters tau_p and tau_n can be typically set to one.
@@ -556,7 +556,7 @@ class Cluster:
 		"""
 
 		listk = False
-		
+
 		if isinstance(k, list):
 			kk = k
 			k = max(k)
@@ -566,6 +566,8 @@ class Cluster:
 			eigens = k - 1
 		if mi == None:
 			mi = self.size
+
+		eye = ss.eye(self.size, format="csc")
 
 		d = sqrtinvdiag(self.D_n)
 		matrix = d * self.n * d
@@ -832,6 +834,10 @@ if __name__ == "__main__":
 	rscore = sm.adjusted_rand_score(truth, pcapreds)
 	print('Symmetric Adjacency score is ', rscore)
 
-	pcapreds = m.geproblem_laplacian(k, normalisation='multiplicative')
+	pcapreds = m.SPONGE(k)
 	rscore = sm.adjusted_rand_score(truth, pcapreds)
-	print('SPONGE score is ', rscore)
+	print('SPONGE core is ', rscore)
+
+	pcapreds = m.SPONGE_sym(k)
+	rscore = sm.adjusted_rand_score(truth, pcapreds)
+	print('SPONGE sym score is ', rscore)
