@@ -8,6 +8,8 @@ Welcome to the SigNet package!
 
 SigNet is a Python package for clustering of Signed Networks.
 
+The code can be found on GitHub at https://github.com/alan-turing-institute/SigNet .
+
 .. toctree::
    :maxdepth: 2
    :caption: Table of Contents:

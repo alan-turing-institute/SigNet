@@ -1,8 +1,7 @@
 Typical usage of the package
 ============================
 
-A typical usage of SigNet involves the initialisation of the Cluster class with a given pair of adjjacency matrices and a subsequent of a specific method.
-
+A typical usage of SigNet involves the initialisation of the Cluster class with a given pair of adjjacency matrices and a subsequent application of a specific method.
 
 .. code-block:: python
 
@@ -13,11 +12,12 @@ A typical usage of SigNet involves the initialisation of the Cluster class with 
 
     # simple test on the signed stochastic block model 
 
-    n = 50000 # number of nodes
-    eta = 0.1 # sign flipping probability
-    p = 0.0002 # sparsity
+    n = 50000  # number of nodes
+    k = 2      # number of clusters
+    eta = 0.1  # sign flipping probability
+    p = 0.0002 # esge probability
 
-    (Ap, An), true_assignment = SSBM(n, k, pin, etain) # construct a graph
+    (Ap, An), true_assignment = SSBM(n = n, k = k, pin = p, etain = eta) # construct a graph
 
     c = Cluster((Ap, An))
 
