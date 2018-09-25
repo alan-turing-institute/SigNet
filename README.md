@@ -28,7 +28,7 @@ eta = 0.1 # sign flipping probability
 k = 2
 p = 0.0002 # sparsity
 
-(Ap, An), true_assignment = SSBM(n, k, pin, etain) # construct a graph
+(Ap, An), true_assignment = SSBM(n = n, k = k, pin = p, etain = eta) # construct a graph
 
 c = Cluster((Ap, An))
 
