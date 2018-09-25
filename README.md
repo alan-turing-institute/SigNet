@@ -1,4 +1,7 @@
 # SigNet
+
+[![DOI](https://zenodo.org/badge/147539304.svg)](https://zenodo.org/badge/latestdoi/147539304)
+
 A package for clustering of Signed Networks, the following algorithms were implemented:
 
 - Standard spectral clustering with
