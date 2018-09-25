@@ -1,7 +1,7 @@
 Typical usage of the package
 ============================
 
-A typical usage of SigNet involves the initialisation of the Cluster class with a given pair of adjjacency matrices and a subsequent application of a specific method.
+A typical usage of SigNet involves the initialisation of the Cluster class with a given pair of adjacency matrices and a subsequent application of a specific method.
 
 .. code-block:: python
 
