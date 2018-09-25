@@ -17,6 +17,6 @@ Installing the package
 
 Install the latest version from this Github repository via
 
-.. code-block:: bash
-
+::
 	pip install git+https://github.com/alan-turing-institute/SigNet.git
+
