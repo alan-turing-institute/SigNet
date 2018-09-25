@@ -23,10 +23,10 @@ from sklearn.metrics import adjusted_rand_score
 
 # simple test on the signed stochastic block model 
 
-n = 50000 # number of nodes
-eta = 0.1 # sign flipping probability
-k = 2
-p = 0.0002 # sparsity
+    n = 50000  # number of nodes
+    k = 2      # number of clusters
+    eta = 0.1  # sign flipping probability
+    p = 0.0002 # esge probability
 
 (Ap, An), true_assignment = SSBM(n = n, k = k, pin = p, etain = eta) # construct a graph
 
