@@ -26,7 +26,7 @@ from sklearn.metrics import adjusted_rand_score
     n = 50000  # number of nodes
     k = 2      # number of clusters
     eta = 0.1  # sign flipping probability
-    p = 0.0002 # esge probability
+    p = 0.0002 # edge probability
 
 (Ap, An), true_assignment = SSBM(n = n, k = k, pin = p, etain = eta) # construct a graph
 
