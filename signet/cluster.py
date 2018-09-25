@@ -45,7 +45,7 @@ class Cluster:
 
 	def spectral_cluster_adjacency(self, k=2, normalisation='sym_sep', eigens=None, mi=None):
 
-		"""Clusters the graph by using an embedding based on eigenvectors of the adjacency matrix.
+		"""Clusters the graph using eigenvectors of the adjacency matrix.
 
 		Args:
 			k (int, or list of int) : The number of clusters to identify. If a list is given, the output is a corresponding list.
@@ -124,8 +124,7 @@ class Cluster:
 
 	def spectral_cluster_adjacency_reg(self, k=2, normalisation='sym_sep', tau_p=None, tau_n=None, eigens=None,
 	                                   mi=None):
-
-		"""Clusters the graph by using an embedding based on eigenvectors of the adjacency matrix.
+		"""Clusters the graph using eigenvectors of the regularised adjacency matrix.
 
 		Args:
 			k (int): The number of clusters to identify.
@@ -283,7 +282,7 @@ class Cluster:
 
 	def spectral_cluster_laplacian(self, k=2, normalisation='sym_sep', eigens=None, mi=None):
 
-		"""Clusters the graph by using an embedding based on eigenvectors of the graph laplacian.
+		"""Clusters the graph using the eigenvectors of the graph signed Laplacian.
 
 		Args:
 			k (int, or list of int) : The number of clusters to identify. If a list is given, the output is a corresponding list.
@@ -422,7 +421,7 @@ class Cluster:
 			return [sl.KMeans(n_clusters=x).fit(np.atleast_2d(v[:, 1 - x:])).labels_ for x in kk]
 
 	def geproblem_laplacian(self, k=4, normalisation='multiplicative', eigens=None, mi=None, tau=1.):
-		"""Clusters the graph by solving a laplacian-based generalised eigenvalue problem.
+		"""Clusters the graph by solving a Laplacian-based generalised eigenvalue problem.
 
 		Args:
 			k (int, or list of int) : The number of clusters to identify. If a list is given, the output is a corresponding list.
@@ -484,15 +483,16 @@ class Cluster:
 		else:
 			return [sl.KMeans(n_clusters=x).fit(np.atleast_2d(v[:, 0:x - 1])).labels_ for x in kk]
 
-	def geproblem_laplacian_tau(self, k=4, normalisation='multiplicative', tau_p=1, tau_n=1, eigens=None, mi=None):
-		"""Clusters the graph by solving a laplacian-based generalised eigenvalue problem with arbitrary parameters tau_p tau_n.
+	def SPONGE(self, k=4, tau_p=1, tau_n=1, eigens=None, mi=None):
+		"""Clusters the graph using the Signed Positive Over Negative Generalised Eigenproblem (SPONGE) clustering.
+
+		The algorithm tries to minimises the following ratio (Lbar^+ + tau_n D^-)/(Lbar^- + tau_p D^+).
+		The parameters tau_p and tau_n can be typically set to one.
 
 		Args:
 			k (int, or list of int) : The number of clusters to identify. If a list is given, the output is a corresponding list.
-			normalisation (string): How to normalise for cluster size:
-				'none' - do not normalise.
-				'additive' - add degree matrices appropriately.
-				'multiplicative' - multiply by degree matrices appropriately.
+			tau_n (float): regularisation of the numerator
+			tau_p (float): regularisation of the denominator
 
 		Returns:
 			array of int, or list of array of int: Output assignment to clusters.
@@ -515,35 +515,11 @@ class Cluster:
 		if mi == None:
 			mi = self.size
 
-		eye = ss.eye(self.size, format="csc")
+		matrix1 = self.D_p - self.p
+		matrix2 = self.D_n - self.n
 
-		if normalisation == 'none':
-			matrix1 = self.D_p - self.p
-			matrix2 = self.D_n - self.n
-
-			matrix1 = matrix1 + tau_n * eye
-			matrix2 = matrix2 + tau_p * eye
-
-		elif normalisation == 'additive':
-			matrix1 = self.D_p - self.p
-			matrix2 = self.D_n - self.n
-
-			matrix1 = matrix1 + tau_n * self.D_n
-			matrix2 = matrix2 + tau_p * self.D_p
-
-
-		elif normalisation == 'multiplicative':
-
-			d = sqrtinvdiag(self.D_n)
-			matrix = d * self.n * d
-			matrix2 = eye - matrix
-
-			d = sqrtinvdiag(self.D_p)
-			matrix = d * self.p * d
-			matrix1 = eye - matrix
-
-			matrix1 = matrix1 + tau_n * eye
-			matrix2 = matrix2 + tau_p * eye
+		matrix1 = matrix1 + tau_n * self.D_n
+		matrix2 = matrix2 + tau_p * self.D_p
 
 		v0 = np.random.normal(0, 1, (self.p.shape[0], eigens))
 		(w, v) = ss.linalg.lobpcg(matrix1, v0, B=matrix2, maxiter=mi, largest=False)
@@ -557,229 +533,282 @@ class Cluster:
 			return [sl.KMeans(n_clusters=x).fit(np.atleast_2d(v[:, 0:x - 1])).labels_ for x in kk]
 
 
-def find_eigenvalues(self, k=100, matrix='laplacian'):
-	"""Find top or bottom k eigenvalues of adjacency or laplacian matrix.
 
-	The list of the top (bottom) k eigenvalues of the adjacency (laplacian) matrix is returned.
-	This can be useful in identifying the number of clusters.
+	def SPONGE_sym(self, k=4, tau_p=1, tau_n=1, eigens=None, mi=None):
+		"""Clusters the graph using the symmetric normalised version of the SPONGE clustering clustering.
 
-	Note:
-		The Laplacian matrix used is the signed symmetric Laplacian.
+		The algorithm tries to minimises the following ratio (Lbar_sym^+ + tau_n Id)/(Lbar_sym^- + tau_p Id).
+		The parameters tau_p and tau_n can be typically set to one.
 
-	Args:
-		k (int): Number of eigenvalues to return
-		matrix (str): Type of matrix to diagonalise (either 'adjacency' or 'laplacian')
+		Args:
+			k (int, or list of int) : The number of clusters to identify. If a list is given, the output is a corresponding list.
+			tau_n (float): regularisation of the numerator
+			tau_p (float): regularisation of the denominator
 
-	Returns:
-		array of float: An array of the first k eigenvalues, ordered in ascending or descending order
-			(depending on the matrix type) """
+		Returns:
+			array of int, or list of array of int: Output assignment to clusters.
 
-	k = min(self.size, k)
-	if matrix == 'adjacency':
-		(w, v) = ss.linalg.eigsh(A_, k, which='LA')
-		w = w[::-1]
-	elif matrix == 'laplacian':
-		(w, v) = ss.linalg.eigsh(self.symLbar, k, which='SA')
+		Other parameters:
+			eigens (int): The number of eigenvectors to take. Defaults to k.
+			mi (int): The maximum number of iterations for which to run eigenvlue solvers. Defaults to number of nodes.
+			nudge (int): Amount added to diagonal to bound eigenvalues away from 0.
 
-	else:
-		raise ValueError('please select a valid matrix type')
-	return w
+		"""
 
+		listk = False
+		
+		if isinstance(k, list):
+			kk = k
+			k = max(k)
+			listk = True
 
-def spectral_cluster_bethe_hessian(self, k, mi=1000, r=None, justpos=True):
-	"""Clustering based on signed Bethe Hessian.
+		if eigens == None:
+			eigens = k - 1
+		if mi == None:
+			mi = self.size
 
-	A low dimensional embedding is obtained via the lowest eigenvectors of the signed Bethe Hessian matrix Hbar and
-	k-means is performed in this space.
+		d = sqrtinvdiag(self.D_n)
+		matrix = d * self.n * d
+		matrix2 = eye - matrix
 
-	Args:
-		k (int, or list of int) : The number of clusters to identify. If a list is given, the output is a corresponding list.
-		mi (int): Maximum number of iterations of the eigensolver.
-		type (str): Types of normalisation of the Laplacian matrix. 'unnormalised', 'symmetric', 'random_walk'.
-
-	Returns:
-		array of int, or list of array of int: Label assignments.
-		int: Suggested number of clusters for network.
-
-	"""
-	listk = False
-	if isinstance(k, list):
-		kk = k
-		k = max(k)
-		listk = True
-
-	if r is None:
-
-		d = np.mean(self.Dbar.data)
-		dsq = np.mean(self.Dbar.data ** 2)
-
-		# r = np.sqrt(d)  # SSB
-		r = np.sqrt(dsq / d - 1)  # general
-	else:
-		pass
-	eigens = k - 1
-
-	self.Hbar_p = (r ** 2 - 1) * ss.identity(self.size, format='csc') - r * self.A + self.Dbar
-
-	(w, v) = ss.linalg.eigsh(self.Hbar_p, eigens, which='SA', maxiter=mi)
-	if not justpos:
-		r = - r
-
-		self.Hbar_n = (r ** 2 - 1) * ss.identity(self.size, format='csc') - r * self.A + self.Dbar
-
-		(wn, vn) = ss.linalg.eigsh(self.Hbar_n, eigens, which='SA', maxiter=mi)
-		w = np.hstack((w, wn))
-		v = np.hstack((v, vn))
-		eigens = 2 * eigens
-	klen = len([x for x in range(eigens) if w[x] < 0])
-	idx = np.argsort(w)[0:k - 1]
-	v = v[:, idx]
-	if not listk:
-		v = np.atleast_2d(v)
-		x = sl.KMeans(n_clusters=k).fit(v)
-		return x.labels_, klen
-	else:
-		return [sl.KMeans(n_clusters=x).fit(np.atleast_2d(v[:, 0:x - 1])).labels_ for x in kk], klen + 1
-
-
-def SDP(self, k, solver='BM_proj_grad', normalisation='sym_sep'):
-	"""Clustering based on a SDP relaxation of the clustering problem.
-
-	A low dimensional embedding is obtained via the lowest eigenvectors of positive-semidefinite matrix Z
-	which maximises its Frobenious product with the adjacency matrix and k-means is performed in this space.
-
-	Args:
-		k (int, or list of int) : The number of clusters to identify. If a list is given, the output is a corresponding list.
-		solver (str): Type of solver for the SDP formulation.
-			'interior_point_method' - Interior point method.
-			'BM_proj_grad' - Burer Monteiro method using projected gradient updates.
-			'BM_aug_lag' - Burer Monteiro method using augmented Lagrangian updates.
-
-	Returns:
-		array of int, or list of array of int: Label assignments.
-
-	"""
-
-	listk = False
-	if isinstance(k, list):
-		kk = k
-		k = max(k)
-		listk = True
-
-	if normalisation == 'none':
-		matrix = self.A
-
-	elif normalisation == 'sym':
-		d = sqrtinvdiag(self.Dbar)
-		matrix = d * self.A * d
-
-	elif normalisation == 'sym_sep':
 		d = sqrtinvdiag(self.D_p)
 		matrix = d * self.p * d
-		d = sqrtinvdiag(self.D_n)
-		matrix = matrix - (d * self.n * d)
+		matrix1 = eye - matrix
 
-	if solver == 'interior_point_method':
-		import cvxpy as cvx
+		matrix1 = matrix1 + tau_n * eye
+		matrix2 = matrix2 + tau_p * eye
 
-		# Define a cvx optimization variable
-		Z = cvx.Variable((self.size, self.size), PSD=True)
-		ones = np.ones(self.size)
-		# Define constraints
-		constraints = [cvx.diag(Z) == ones]
-		# Define an objective function
-		obj = cvx.Maximize(cvx.trace(self.A * Z))
-		# Define an optimisation problem
-		prob = cvx.Problem(obj, constraints)
-		# Solve optimisation problem
+		v0 = np.random.normal(0, 1, (self.p.shape[0], eigens))
+		(w, v) = ss.linalg.lobpcg(matrix1, v0, B=matrix2, maxiter=mi, largest=False)
 
-		prob.solve(solver='CVXOPT')
+		v = v / w
+		if not listk:
+			v = np.atleast_2d(v)
+			x = sl.KMeans(n_clusters=k).fit(v)
+			return x.labels_
+		else:
+			return [sl.KMeans(n_clusters=x).fit(np.atleast_2d(v[:, 0:x - 1])).labels_ for x in kk]
 
-		print("status:", prob.status)
-		print("optimal value", prob.value)
-		# print("optimal var", Z.value)
-		print(Z.value)
+	def find_eigenvalues(self, k=100, matrix='laplacian'):
+		"""Find top or bottom k eigenvalues of adjacency or laplacian matrix.
 
-		# Diagonalise solution
-		(w, v) = sp.linalg.eigh(Z.value, eigvals=(self.size - k, self.size - 1))
-		v = v * w
+		The list of the top (bottom) k eigenvalues of the adjacency (laplacian) matrix is returned.
+		This can be useful in identifying the number of clusters.
 
-	elif solver == 'BM_proj_grad':
+		Note:
+			The Laplacian matrix used is the signed symmetric Laplacian.
 
-		r = math.floor(np.sqrt(2 * self.size) + 1)
-		X = np.random.normal(0, 1, (self.size, r))
-		ones = np.ones((self.size, 1))
-		step = 2
-		traces = []
-		i = 0
-		while True:
-			AX = matrix.dot(X)
-			G = 2 * AX
-			X = X + step * G
-			trace = np.einsum('ij, ij -> ', X, AX)
-			traces.append(trace)
-			Norms = np.linalg.norm(X, axis=1)
-			X = np.divide(X, Norms[:, None])
-			delta_trace = abs(traces[-1] - traces[-2]) / abs(traces[-2]) if i > 0 else 100.
-			if delta_trace <= 0.01:
-				break
-			i += 1
-		Z = X.T.dot(X)
-		(w, v) = sp.linalg.eigh(Z, eigvals=(r - k, r - 1))
-		v = X.dot(v)
-		v = v * w
+		Args:
+			k (int): Number of eigenvalues to return
+			matrix (str): Type of matrix to diagonalise (either 'adjacency' or 'laplacian')
 
-	elif solver == 'BM_aug_lag':
-		r = int(np.sqrt(2 * self.size))
-		X = augmented_lagrangian(A=matrix, r=r, printing=False, init=None)
-		Z = X.T.dot(X)
-		(w, v) = sp.linalg.eigh(Z, eigvals=(r - k, r - 1))
-		v = X.dot(v)
-		v = v * w
+		Returns:
+			array of float: An array of the first k eigenvalues, ordered in ascending or descending order
+				(depending on the matrix type) """
 
-	else:
-		raise ValueError('please specify a valid solver')
+		k = min(self.size, k)
+		if matrix == 'adjacency':
+			(w, v) = ss.linalg.eigsh(A_, k, which='LA')
+			w = w[::-1]
+		elif matrix == 'laplacian':
+			(w, v) = ss.linalg.eigsh(self.symLbar, k, which='SA')
 
-	if not listk:
-		v = np.atleast_2d(v)
-		x = sl.KMeans(n_clusters=k).fit(v)
-		return x.labels_
-	else:
-		return [sl.KMeans(n_clusters=x).fit(np.atleast_2d(v[:, 1 - x:])).labels_ for x in kk]
+		else:
+			raise ValueError('please select a valid matrix type')
+		return w
 
+	def spectral_cluster_bethe_hessian(self, k, mi=1000, r=None, justpos=True):
+		"""Clustering based on signed Bethe Hessian.
 
-def waggle(self, k, labs, matrix=None, rounds=50, mini=False):
-	"""Postprocessing based on iteratively merging and cutting clusters of the provided solution.
+		A low dimensional embedding is obtained via the lowest eigenvectors of the signed Bethe Hessian matrix Hbar and
+		k-means is performed in this space.
 
-	Pairs of clusters are merged randomly.
-	Merged clusters are then partitioned in two by spectral clustering on input matrix.
+		Args:
+			k (int, or list of int) : The number of clusters to identify. If a list is given, the output is a corresponding list.
+			mi (int): Maximum number of iterations of the eigensolver.
+			type (str): Types of normalisation of the Laplacian matrix. 'unnormalised', 'symmetric', 'random_walk'.
 
-	Args:
-		k (int): The number of clusters to identify.
-		labs (array of int): Initial assignment to clusters.
-		matrix (csc matrix): Matrix to use for partitioning. Defaults to un-normalised adjacency matrix.
+		Returns:
+			array of int, or list of array of int: Label assignments.
+			int: Suggested number of clusters for network.
 
-	Returns:
-		array of int: Output assignment to clusters.
+		"""
+		listk = False
+		if isinstance(k, list):
+			kk = k
+			k = max(k)
+			listk = True
 
-	Other parameters:
-		rounds (int): Number of iterations to perform.
-		mini (boolean): Whether to minimise (rather than maximise) the input matrix objective when partitioning.
+		if r is None:
 
-	"""
-	if matrix == None:
-		matrix = self.A
-	elemlist = [[x for x in range(self.size) if labs[x] == i] for i in range(k)]
-	if k == 2:
-		rounds = 0
-	for i in range(rounds):
-		elemlist, dc, numbers = merge(elemlist)
-		elemlist = cut(elemlist, matrix, numbers, dc, mini)
-	cluster = [0] * self.size
-	for i in range(len(elemlist)):
-		for j in elemlist[i]:
-			cluster[j] = i
-	return cluster
+			d = np.mean(self.Dbar.data)
+			dsq = np.mean(self.Dbar.data ** 2)
+
+			# r = np.sqrt(d)  # SSB
+			r = np.sqrt(dsq / d - 1)  # general
+		else:
+			pass
+		eigens = k - 1
+
+		self.Hbar_p = (r ** 2 - 1) * ss.identity(self.size, format='csc') - r * self.A + self.Dbar
+
+		(w, v) = ss.linalg.eigsh(self.Hbar_p, eigens, which='SA', maxiter=mi)
+		if not justpos:
+			r = - r
+
+			self.Hbar_n = (r ** 2 - 1) * ss.identity(self.size, format='csc') - r * self.A + self.Dbar
+
+			(wn, vn) = ss.linalg.eigsh(self.Hbar_n, eigens, which='SA', maxiter=mi)
+			w = np.hstack((w, wn))
+			v = np.hstack((v, vn))
+			eigens = 2 * eigens
+		klen = len([x for x in range(eigens) if w[x] < 0])
+		idx = np.argsort(w)[0:k - 1]
+		v = v[:, idx]
+		if not listk:
+			v = np.atleast_2d(v)
+			x = sl.KMeans(n_clusters=k).fit(v)
+			return x.labels_, klen
+		else:
+			return [sl.KMeans(n_clusters=x).fit(np.atleast_2d(v[:, 0:x - 1])).labels_ for x in kk], klen + 1
+
+	def SDP_cluster(self, k, solver='BM_proj_grad', normalisation='sym_sep'):
+		"""Clustering based on a SDP relaxation of the clustering problem.
+
+		A low dimensional embedding is obtained via the lowest eigenvectors of positive-semidefinite matrix Z
+		which maximises its Frobenious product with the adjacency matrix and k-means is performed in this space.
+
+		Args:
+			k (int, or list of int) : The number of clusters to identify. If a list is given, the output is a corresponding list.
+			solver (str): Type of solver for the SDP formulation.
+				'interior_point_method' - Interior point method.
+				'BM_proj_grad' - Burer Monteiro method using projected gradient updates.
+				'BM_aug_lag' - Burer Monteiro method using augmented Lagrangian updates.
+
+		Returns:
+			array of int, or list of array of int: Label assignments.
+
+		"""
+
+		listk = False
+		if isinstance(k, list):
+			kk = k
+			k = max(k)
+			listk = True
+
+		if normalisation == 'none':
+			matrix = self.A
+
+		elif normalisation == 'sym':
+			d = sqrtinvdiag(self.Dbar)
+			matrix = d * self.A * d
+
+		elif normalisation == 'sym_sep':
+			d = sqrtinvdiag(self.D_p)
+			matrix = d * self.p * d
+			d = sqrtinvdiag(self.D_n)
+			matrix = matrix - (d * self.n * d)
+
+		if solver == 'interior_point_method':
+			import cvxpy as cvx
+
+			# Define a cvx optimization variable
+			Z = cvx.Variable((self.size, self.size), PSD=True)
+			ones = np.ones(self.size)
+			# Define constraints
+			constraints = [cvx.diag(Z) == ones]
+			# Define an objective function
+			obj = cvx.Maximize(cvx.trace(self.A * Z))
+			# Define an optimisation problem
+			prob = cvx.Problem(obj, constraints)
+			# Solve optimisation problem
+
+			prob.solve(solver='CVXOPT')
+
+			print("status:", prob.status)
+			print("optimal value", prob.value)
+			# print("optimal var", Z.value)
+			print(Z.value)
+
+			# Diagonalise solution
+			(w, v) = sp.linalg.eigh(Z.value, eigvals=(self.size - k, self.size - 1))
+			v = v * w
+
+		elif solver == 'BM_proj_grad':
+
+			r = math.floor(np.sqrt(2 * self.size) + 1)
+			X = np.random.normal(0, 1, (self.size, r))
+			ones = np.ones((self.size, 1))
+			step = 2
+			traces = []
+			i = 0
+			while True:
+				AX = matrix.dot(X)
+				G = 2 * AX
+				X = X + step * G
+				trace = np.einsum('ij, ij -> ', X, AX)
+				traces.append(trace)
+				Norms = np.linalg.norm(X, axis=1)
+				X = np.divide(X, Norms[:, None])
+				delta_trace = abs(traces[-1] - traces[-2]) / abs(traces[-2]) if i > 0 else 100.
+				if delta_trace <= 0.01:
+					break
+				i += 1
+			Z = X.T.dot(X)
+			(w, v) = sp.linalg.eigh(Z, eigvals=(r - k, r - 1))
+			v = X.dot(v)
+			v = v * w
+
+		elif solver == 'BM_aug_lag':
+			r = int(np.sqrt(2 * self.size))
+			X = augmented_lagrangian(A=matrix, r=r, printing=False, init=None)
+			Z = X.T.dot(X)
+			(w, v) = sp.linalg.eigh(Z, eigvals=(r - k, r - 1))
+			v = X.dot(v)
+			v = v * w
+
+		else:
+			raise ValueError('please specify a valid solver')
+
+		if not listk:
+			v = np.atleast_2d(v)
+			x = sl.KMeans(n_clusters=k).fit(v)
+			return x.labels_
+		else:
+			return [sl.KMeans(n_clusters=x).fit(np.atleast_2d(v[:, 1 - x:])).labels_ for x in kk]
+
+	def waggle(self, k, labs, matrix=None, rounds=50, mini=False):
+		"""Postprocessing based on iteratively merging and cutting clusters of the provided solution.
+
+		Pairs of clusters are merged randomly.
+		Merged clusters are then partitioned in two by spectral clustering on input matrix.
+
+		Args:
+			k (int): The number of clusters to identify.
+			labs (array of int): Initial assignment to clusters.
+			matrix (csc matrix): Matrix to use for partitioning. Defaults to un-normalised adjacency matrix.
+
+		Returns:
+			array of int: Output assignment to clusters.
+
+		Other parameters:
+			rounds (int): Number of iterations to perform.
+			mini (boolean): Whether to minimise (rather than maximise) the input matrix objective when partitioning.
+
+		"""
+		if matrix == None:
+			matrix = self.A
+		elemlist = [[x for x in range(self.size) if labs[x] == i] for i in range(k)]
+		if k == 2:
+			rounds = 0
+		for i in range(rounds):
+			elemlist, dc, numbers = merge(elemlist)
+			elemlist = cut(elemlist, matrix, numbers, dc, mini)
+		cluster = [0] * self.size
+		for i in range(len(elemlist)):
+			for j in elemlist[i]:
+				cluster[j] = i
+		return cluster
 
 
 if __name__ == "__main__":
@@ -806,5 +835,3 @@ if __name__ == "__main__":
 	pcapreds = m.geproblem_laplacian(k, normalisation='multiplicative')
 	rscore = sm.adjusted_rand_score(truth, pcapreds)
 	print('SPONGE score is ', rscore)
-
-

@@ -1,11 +1,11 @@
 Implemented Algorithms
-============================
+======================
 
 The algorithms currently implemented in the package can be *clustered* in three broad groups
 
 
-Spectral clustering algorithms
-------------------------------
+Spectral clustering
+-------------------
 
 These algorithms involve finding the top (lowest or highest) eigenvectors of a specific matrix. Depending on the matrix used, one can distinguish several algorithms. Some well known matrices which can be used for signed networks are:
 
