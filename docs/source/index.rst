@@ -12,14 +12,12 @@ The code can be found on GitHub at https://github.com/alan-turing-institute/SigN
 
 .. toctree::
    :maxdepth: 2
-   :caption: Table of Contents:
+   :caption: Table of Contents
 
    installation
    implemented_algorithms
    usage
-   cluster
-   block_models
-   utils
+   modules
 
 Indices and tables
 ------------------

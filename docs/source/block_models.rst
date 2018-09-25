@@ -5,3 +5,4 @@ This module contains a series of function that can generate random graphs with a
 
 .. automodule:: block_models
     :members:
+
