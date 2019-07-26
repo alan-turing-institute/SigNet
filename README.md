@@ -20,7 +20,7 @@ A package for clustering of Signed Networks, the following algorithms were imple
 
 ```python
 from signet.cluster import Cluster 
-from signet.block_models import SSMB
+from signet.block_models import SSBM
 from sklearn.metrics import adjusted_rand_score
 
 
