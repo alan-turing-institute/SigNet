@@ -72,3 +72,13 @@ If you have problems with the code please contact
 
 - Peter Davies: p.w.Davies@warwick.ac.uk
 - Aldo Glielmo: aldo.glielmo@kcl.ac.uk
+
+
+## Reference
+
+- The generalised eigenproblem clustering has been proposed and analysed in:
+
+  [1] Cucuringu, M., Davies, P., Glielmo, A., Tyagi, H. *SPONGE: A generalized eigenproblem for clustering signed networks.* Proceedings of Machine Learning Research 89 (2019). http://proceedings.mlr.press/v89/cucuringu19a.html
+  
+
+
