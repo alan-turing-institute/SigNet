@@ -158,8 +158,8 @@ class Cluster:
 
 		symmetric = True
 
-		p_tau = self.p.copy()
-		n_tau = self.n.copy()
+		p_tau = self.p.copy().astype(np.float32)
+		n_tau = self.n.copy().astype(np.float32)
 		p_tau.data += tau_p
 		n_tau.data += tau_n
 
@@ -610,7 +610,7 @@ class Cluster:
 
 		k = min(self.size, k)
 		if matrix == 'adjacency':
-			(w, v) = ss.linalg.eigsh(A_, k, which='LA')
+			(w, v) = ss.linalg.eigsh(self.A, k, which='LA')
 			w = w[::-1]
 		elif matrix == 'laplacian':
 			(w, v) = ss.linalg.eigsh(self.symLbar, k, which='SA')
